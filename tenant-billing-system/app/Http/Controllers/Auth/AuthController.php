@@ -9,9 +9,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Models\Admin;
+use App\Services\RecaptchaService;
 
 class AuthController extends Controller
 {
+    public function __construct(private RecaptchaService $recaptchaService)
+    {
+    }
+
     // Show user login form
     public function showUserLoginForm()
     {
@@ -51,34 +56,14 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'recaptcha_response' => 'required',
+            'g-recaptcha-response' => 'required|string',
         ], [
-            'recaptcha_response.required' => 'Please verify that you are not a robot.',
+            'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
         ]);
 
-        // Validate reCAPTCHA
-        $recaptchaResponse = $request->input('recaptcha_response');
-        $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
-        $data = [
-            'secret' => env('RECAPTCHA_SECRET_KEY'),
-            'response' => $recaptchaResponse
-        ];
-
-        $options = [
-            'http' => [
-                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data)
-            ]
-        ];
-
-        $context = stream_context_create($options);
-        $result = file_get_contents($verifyUrl, false, $context);
-        $response = json_decode($result);
-
-        if (!$response->success) {
+        if (! $this->recaptchaService->verify((string) $request->input('g-recaptcha-response'))) {
             return back()->withErrors([
-                'recaptcha_response' => 'reCAPTCHA verification failed.',
+                'g-recaptcha-response' => 'reCAPTCHA verification failed.',
             ])->withInput();
         }
 
