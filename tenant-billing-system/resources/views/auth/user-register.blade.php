@@ -39,12 +39,12 @@
             </div>
             
             <div class="mb-6">
-                <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
-                @if ($errors->has('recaptcha_response'))
+                <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                @error('g-recaptcha-response')
                     <div class="alert alert-error mt-2">
-                        {{ $errors->first('recaptcha_response') }}
+                        {{ $message }}
                     </div>
-                @endif
+                @enderror
             </div>
             
             <div class="flex items-center justify-between">

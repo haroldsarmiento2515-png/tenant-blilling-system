@@ -75,6 +75,9 @@ The system includes the following main entities:
 - `/admin/dashboard/user-chart-data` - User registration chart data
 - `/admin/dashboard/billing-chart-data` - Billing statistics chart data
 
+### API Routes
+- `POST /api/recaptcha/verify` - Validate Google reCAPTCHA responses
+
 ## Models and Relationships
 
 - **User** ↔ **Tenant** (Many-to-Many via `tenant_user` pivot table)
