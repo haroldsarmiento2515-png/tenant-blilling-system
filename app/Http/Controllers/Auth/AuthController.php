@@ -51,13 +51,13 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'recaptcha_response' => 'required',
+            'g-recaptcha-response' => 'required|string',
         ], [
-            'recaptcha_response.required' => 'Please verify that you are not a robot.',
+            'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
         ]);
 
         // Validate reCAPTCHA
-        $recaptchaResponse = $request->input('recaptcha_response');
+        $recaptchaResponse = $request->input('g-recaptcha-response');
         $verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
         $data = [
             'secret' => env('RECAPTCHA_SECRET_KEY'),
@@ -74,11 +74,11 @@ class AuthController extends Controller
 
         $context = stream_context_create($options);
         $result = file_get_contents($verifyUrl, false, $context);
-        $response = json_decode($result);
+        $response = $result ? json_decode($result) : null;
 
-        if (!$response->success) {
+        if (!$response || empty($response->success)) {
             return back()->withErrors([
-                'recaptcha_response' => 'reCAPTCHA verification failed.',
+                'g-recaptcha-response' => 'reCAPTCHA verification failed.',
             ])->withInput();
         }
 

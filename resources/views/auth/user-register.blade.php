@@ -668,7 +668,7 @@
                 <div class="recaptcha-container">
                     <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}" data-theme="dark"></div>
                 </div>
-                @error('recaptcha_response')
+                @error('g-recaptcha-response')
                     <span class="field-error" style="justify-content: center; margin-top: 0.5rem;">{{ $message }}</span>
                 @enderror
                 
