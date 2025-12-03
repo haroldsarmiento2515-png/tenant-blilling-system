@@ -15,12 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
             $table->string('bill_number')->unique();
+            $table->enum('type', ['rent', 'electricity', 'water', 'maintenance', 'other'])->default('rent');
+            $table->string('description');
+            $table->decimal('amount', 10, 2);
+            $table->decimal('late_fee', 10, 2)->default(0);
+            $table->decimal('total_amount', 10, 2);
             $table->date('billing_date');
             $table->date('due_date');
-            $table->decimal('amount', 10, 2);
-            $table->decimal('paid_amount', 10, 2)->default(0);
-            $table->enum('status', ['pending', 'paid', 'overdue'])->default('pending');
-            $table->text('description')->nullable();
+            $table->enum('status', ['pending', 'paid', 'partial', 'overdue', 'cancelled'])->default('pending');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

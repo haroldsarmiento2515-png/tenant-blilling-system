@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Tenant;
 use App\Models\Bill;
+use App\Models\Payment;
+use App\Models\Tenant;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Response;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -19,94 +19,84 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Get user registration statistics
-        $userStats = $this->getUserRegistrationStats();
-        
-        // Get billing statistics
-        $billingStats = $this->getBillingStats();
-        
-        // Get recent activities
-        $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
-        $recentTenants = Tenant::orderBy('created_at', 'desc')->limit(5)->get();
-        
-        return View::make('admin.dashboard', compact('userStats', 'billingStats', 'recentUsers', 'recentTenants'));
-    }
-    
-    /**
-     * Get user registration statistics.
-     */
-    private function getUserRegistrationStats()
-    {
-        // Get monthly user registrations for the last 6 months
-        $stats = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $month = Carbon::now()->subMonths($i);
-            $count = User::whereYear('created_at', $month->year)
-                        ->whereMonth('created_at', $month->month)
-                        ->count();
-            
-            $stats[] = [
-                'month' => $month->format('M Y'),
-                'count' => $count
-            ];
-        }
-        
-        return $stats;
-    }
-    
-    /**
-     * Get billing statistics.
-     */
-    private function getBillingStats()
-    {
+        // Get statistics
+        $totalUsers = User::count();
         $totalBills = Bill::count();
         $paidBills = Bill::where('status', 'paid')->count();
         $pendingBills = Bill::where('status', 'pending')->count();
         $overdueBills = Bill::where('status', 'overdue')->count();
         
-        $totalAmount = Bill::sum('amount');
-        $paidAmount = Bill::where('status', 'paid')->sum('amount');
+        // Calculate collection rate
+        $collectionRate = $totalBills > 0 
+            ? round(($paidBills / $totalBills) * 100, 1) 
+            : 0;
         
-        return [
-            'total_bills' => $totalBills,
-            'paid_bills' => $paidBills,
-            'pending_bills' => $pendingBills,
-            'overdue_bills' => $overdueBills,
-            'total_amount' => $totalAmount,
-            'paid_amount' => $paidAmount,
-            'collection_rate' => $totalBills > 0 ? round(($paidBills / $totalBills) * 100, 2) : 0
+        // Get user registration data for chart (last 6 months)
+        $userChartLabels = [];
+        $userChartData = [];
+        
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $userChartLabels[] = $date->format('M');
+            $userChartData[] = User::whereYear('created_at', $date->year)
+                                   ->whereMonth('created_at', $date->month)
+                                   ->count();
+        }
+        
+        // Get billing data for chart
+        $billingChartData = [
+            $paidBills,
+            $pendingBills,
+            $overdueBills
         ];
+        
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalBills',
+            'paidBills',
+            'pendingBills',
+            'overdueBills',
+            'collectionRate',
+            'userChartLabels',
+            'userChartData',
+            'billingChartData'
+        ));
     }
     
     /**
-     * Get chart data for user registrations.
+     * Get user chart data via AJAX (real-time)
      */
     public function getUserChartData()
     {
-        $stats = $this->getUserRegistrationStats();
+        $userChartLabels = [];
+        $userChartData = [];
         
-        $labels = array_column($stats, 'month');
-        $data = array_column($stats, 'count');
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $userChartLabels[] = $date->format('M');
+            $userChartData[] = User::whereYear('created_at', $date->year)
+                                   ->whereMonth('created_at', $date->month)
+                                   ->count();
+        }
         
-        return Response::json([
-            'labels' => $labels,
-            'data' => $data
+        return response()->json([
+            'labels' => $userChartLabels,
+            'data' => $userChartData
         ]);
     }
     
     /**
-     * Get chart data for billing statistics.
+     * Get billing chart data via AJAX (real-time)
      */
     public function getBillingChartData()
     {
-        $billingStats = $this->getBillingStats();
+        $paidBills = Bill::where('status', 'paid')->count();
+        $pendingBills = Bill::where('status', 'pending')->count();
+        $overdueBills = Bill::where('status', 'overdue')->count();
         
-        $labels = ['Paid', 'Pending', 'Overdue'];
-        $data = [$billingStats['paid_bills'], $billingStats['pending_bills'], $billingStats['overdue_bills']];
-        
-        return Response::json([
-            'labels' => $labels,
-            'data' => $data
+        return response()->json([
+            'labels' => ['Paid', 'Pending', 'Overdue'],
+            'data' => [$paidBills, $pendingBills, $overdueBills]
         ]);
     }
 }

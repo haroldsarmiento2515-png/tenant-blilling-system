@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bill_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('payment_number')->unique();
             $table->decimal('amount', 10, 2);
-            $table->string('payment_method')->nullable();
-            $table->string('transaction_id')->nullable();
-            $table->timestamp('payment_date')->nullable();
+            $table->enum('payment_method', ['cash', 'gcash', 'bank_transfer', 'credit_card', 'check', 'other'])->default('cash');
+            $table->string('reference_number')->nullable();
+            $table->date('payment_date');
+            $table->enum('status', ['completed', 'pending', 'failed', 'refunded'])->default('completed');
             $table->text('notes')->nullable();
+            $table->string('receipt_path')->nullable();
             $table->timestamps();
         });
     }
