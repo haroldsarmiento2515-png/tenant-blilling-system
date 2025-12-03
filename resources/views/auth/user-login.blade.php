@@ -16,9 +16,7 @@
             --border: #1f2937;
         }
         body {
-            background: radial-gradient(circle at 20% 20%, rgba(79, 209, 197, 0.12), transparent 25%),
-                        radial-gradient(circle at 80% 0%, rgba(139, 92, 246, 0.14), transparent 25%),
-                        linear-gradient(135deg, #070c18 0%, #0e1324 60%, #0b1221 100%);
+            background: linear-gradient(180deg, #f5f7fb 0%, #e9edf7 55%, #e4e8f3 100%);
             color: var(--text);
             font-family: 'Inter', 'Figtree', system-ui, -apple-system, sans-serif;
         }
@@ -39,24 +37,111 @@
         .bg-3d::before {
             content: '';
             position: absolute;
-            inset: -120px -80px;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(79, 209, 197, 0.08) 0,
-                rgba(79, 209, 197, 0.08) 1px,
-                transparent 1px,
-                transparent 34px
-            ),
-            repeating-linear-gradient(
-                90deg,
-                rgba(139, 92, 246, 0.08) 0,
-                rgba(139, 92, 246, 0.08) 1px,
-                transparent 1px,
-                transparent 34px
-            );
-            transform: perspective(900px) rotateX(68deg) skewY(-8deg) translateY(-40px);
+            inset: -30% -20% -10%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 255, 255, 0.42) 0,
+                    rgba(255, 255, 255, 0.42) 1.2px,
+                    transparent 1.2px,
+                    transparent 34px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(188, 202, 230, 0.4) 0,
+                    rgba(188, 202, 230, 0.4) 1.2px,
+                    transparent 1.2px,
+                    transparent 34px
+                ),
+                radial-gradient(circle at 80% 20%, rgba(79, 209, 197, 0.15), transparent 35%),
+                radial-gradient(circle at 10% 70%, rgba(139, 92, 246, 0.12), transparent 32%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(241, 245, 255, 0.35));
+            transform: perspective(1000px) rotateX(78deg) skewY(-10deg) translateY(-30px);
+            opacity: 0.9;
+            filter: blur(0.3px);
+            border-radius: 32px;
+        }
+        .bg-3d::after {
+            content: '';
+            position: absolute;
+            inset: 24% 6% 12% 12%;
+            background:
+                linear-gradient(120deg, rgba(101, 115, 150, 0.2) 0 10px, transparent 10px),
+                linear-gradient(300deg, rgba(101, 115, 150, 0.15) 0 10px, transparent 10px),
+                linear-gradient(0deg, rgba(255, 255, 255, 0.68), rgba(228, 233, 246, 0.4));
+            transform: perspective(1200px) rotateX(72deg) skewY(-6deg) translate3d(0, 16px, 0);
+            filter: drop-shadow(0 28px 34px rgba(23, 32, 56, 0.15));
+            border-radius: 26px;
+            opacity: 0.9;
+        }
+        .grid-surface {
+            position: absolute;
+            inset: 8% 8% 18% 10%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(107, 124, 158, 0.14) 0,
+                    rgba(107, 124, 158, 0.14) 1px,
+                    transparent 1px,
+                    transparent 40px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(107, 124, 158, 0.12) 0,
+                    rgba(107, 124, 158, 0.12) 1px,
+                    transparent 1px,
+                    transparent 40px
+                );
+            transform: perspective(1100px) rotateX(70deg) skewY(-8deg) translateY(40px);
+            border-radius: 30px;
+            box-shadow: inset 0 18px 34px rgba(10, 18, 40, 0.08);
             opacity: 0.8;
-            filter: blur(0.5px);
+        }
+        .pillar {
+            position: absolute;
+            bottom: 12%;
+            width: 180px;
+            height: 240px;
+            background: linear-gradient(180deg, #fdfefe 0%, #dbe2f1 100%);
+            border-radius: 18px 18px 12px 12px;
+            transform: perspective(800px) rotateX(8deg) rotateY(-16deg);
+            box-shadow: 0 26px 50px rgba(10, 18, 40, 0.15);
+        }
+        .pillar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(120deg, rgba(79, 209, 197, 0.3), rgba(79, 209, 197, 0.05)),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(219, 226, 240, 0.9));
+            border-radius: inherit;
+        }
+        .pillar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -26px;
+            width: 26px;
+            height: 100%;
+            background: linear-gradient(180deg, #cbd3e6 0%, #9eacc9 100%);
+            transform: skewY(-12deg);
+            border-radius: 0 16px 10px 0;
+            box-shadow: inset -8px 0 14px rgba(10, 18, 40, 0.12);
+        }
+        .pillar-1 { left: 10%; }
+        .pillar-2 {
+            left: 46%;
+            height: 280px;
+            width: 210px;
+            transform: perspective(800px) rotateX(10deg) rotateY(-14deg);
+            background: linear-gradient(180deg, #fefefe 0%, #d1d8e8 100%);
+        }
+        .pillar-3 {
+            right: 8%;
+            height: 210px;
+            width: 160px;
+            transform: perspective(800px) rotateX(6deg) rotateY(-20deg);
+            background: linear-gradient(180deg, #ffffff 0%, #dfe6f4 100%);
         }
         .orb {
             position: absolute;
@@ -216,6 +301,10 @@
 
     <div class="auth-shell">
         <div class="bg-3d">
+            <div class="grid-surface"></div>
+            <div class="pillar pillar-1"></div>
+            <div class="pillar pillar-2"></div>
+            <div class="pillar pillar-3"></div>
             <div class="orb orb-1"></div>
             <div class="orb orb-2"></div>
             <div class="orb orb-3"></div>
