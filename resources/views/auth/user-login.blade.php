@@ -16,9 +16,9 @@
             --border: #1f2937;
         }
         body {
-            background: radial-gradient(circle at 20% 20%, rgba(79, 209, 197, 0.08), transparent 25%),
-                        radial-gradient(circle at 80% 0%, rgba(139, 92, 246, 0.08), transparent 25%),
-                        var(--bg);
+            background: radial-gradient(circle at 20% 20%, rgba(79, 209, 197, 0.12), transparent 25%),
+                        radial-gradient(circle at 80% 0%, rgba(139, 92, 246, 0.14), transparent 25%),
+                        linear-gradient(135deg, #070c18 0%, #0e1324 60%, #0b1221 100%);
             color: var(--text);
             font-family: 'Inter', 'Figtree', system-ui, -apple-system, sans-serif;
         }
@@ -27,6 +27,68 @@
             display: grid;
             place-items: center;
             padding: 30px 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        .bg-3d {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.25));
+        }
+        .bg-3d::before {
+            content: '';
+            position: absolute;
+            inset: -120px -80px;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(79, 209, 197, 0.08) 0,
+                rgba(79, 209, 197, 0.08) 1px,
+                transparent 1px,
+                transparent 34px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                rgba(139, 92, 246, 0.08) 0,
+                rgba(139, 92, 246, 0.08) 1px,
+                transparent 1px,
+                transparent 34px
+            );
+            transform: perspective(900px) rotateX(68deg) skewY(-8deg) translateY(-40px);
+            opacity: 0.8;
+            filter: blur(0.5px);
+        }
+        .orb {
+            position: absolute;
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.65;
+            animation: float 14s ease-in-out infinite;
+        }
+        .orb-1 {
+            background: radial-gradient(circle, rgba(79, 209, 197, 0.6), transparent 60%);
+            top: -60px;
+            left: -40px;
+        }
+        .orb-2 {
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.5), transparent 65%);
+            bottom: -80px;
+            right: -20px;
+            animation-delay: 3s;
+        }
+        .orb-3 {
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.5), transparent 60%);
+            top: 20%;
+            right: 45%;
+            width: 240px;
+            height: 240px;
+            animation-delay: 6s;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(18px) translateX(12px); }
         }
         .auth-card {
             width: min(1100px, 100%);
@@ -37,6 +99,8 @@
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             overflow: hidden;
             box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+            position: relative;
+            z-index: 1;
         }
         .auth-aside {
             padding: 32px;
@@ -151,6 +215,11 @@
     </style>
 
     <div class="auth-shell">
+        <div class="bg-3d">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
         <div class="auth-card">
             <div class="auth-aside">
                 <div class="logo">TB</div>
