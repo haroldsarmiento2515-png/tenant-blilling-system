@@ -101,6 +101,9 @@ class AuthController extends Controller
                     ->subject('Email Verification OTP');
         });
 
+        // Store email in session for verification flow
+        $request->session()->put('email', $user->email);
+
         return redirect()->route('verification.notice');
     }
 
@@ -113,6 +116,9 @@ class AuthController extends Controller
     // Verify OTP
     public function verifyOtp(Request $request)
     {
+        $email = $request->input('email') ?? $request->session()->get('email');
+        $request->merge(['email' => $email]);
+
         $request->validate([
             'email' => 'required|email|exists:users,email',
             'otp' => 'required|numeric',
@@ -136,6 +142,40 @@ class AuthController extends Controller
         return back()->withErrors([
             'otp' => 'Invalid or expired OTP.',
         ])->withInput();
+    }
+
+    // Resend OTP
+    public function resendOtp(Request $request)
+    {
+        $email = $request->input('email') ?? $request->session()->get('email');
+
+        if (!$email) {
+            return back()->withErrors([
+                'email' => 'Unable to identify the account for verification.',
+            ]);
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Email address not found.',
+            ]);
+        }
+
+        $otp = rand(100000, 999999);
+        $user->otp = $otp;
+        $user->otp_expires_at = now()->addMinutes(10);
+        $user->save();
+
+        Mail::send('emails.otp', ['user' => $user, 'otp' => $otp], function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('Email Verification OTP');
+        });
+
+        $request->session()->put('email', $user->email);
+
+        return back()->with('success', 'A new verification code has been sent to your email.');
     }
 
     // Show admin login form
