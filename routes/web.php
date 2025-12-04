@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\TenantController;
 
 // Public routes
 Route::get('/', function () {
@@ -27,6 +30,9 @@ Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('bills', BillController::class);
+    Route::resource('payments', PaymentController::class);
+    Route::resource('tenants', TenantController::class);
 });
 
 // Admin Protected routes
