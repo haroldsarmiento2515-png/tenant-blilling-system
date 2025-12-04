@@ -1,18 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-@php
-    $collectionRate = $totalBilled > 0 ? round(($totalPaid / $totalBilled) * 100) : 0;
-    $totalBillsCount = $activeBillsCount + $paidBillsCount;
-    $activityFeed = collect($latestBills)->take(5)->map(function($bill) {
-        return [
-            'description' => "Bill {$bill->bill_number} for " . (optional($bill->tenant)->name ?? 'Unassigned'),
-            'time' => optional($bill->created_at)->diffForHumans() ?? 'Recently',
-            'type' => $bill->status === 'paid' ? 'success' : ($bill->status === 'overdue' ? 'warning' : 'info'),
-        ];
-    });
-@endphp
-
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -149,9 +137,9 @@
                     </a>
                 </li>
                 <li class="sidebar-menu-title">Billing</li>
-                <li class="sidebar-menu-item"><a href="#" class="sidebar-menu-link">Bills</a></li>
-                <li class="sidebar-menu-item"><a href="#" class="sidebar-menu-link">Payments</a></li>
-                <li class="sidebar-menu-item"><a href="#" class="sidebar-menu-link">Reports</a></li>
+                <li class="sidebar-menu-item"><a href="{{ route('bills.index') }}" class="sidebar-menu-link">Bills</a></li>
+                <li class="sidebar-menu-item"><a href="{{ route('payments.index') }}" class="sidebar-menu-link">Payments</a></li>
+                <li class="sidebar-menu-item"><a href="{{ route('tenants.index') }}" class="sidebar-menu-link">Tenants</a></li>
                 <li class="sidebar-menu-title">Account</li>
                 <li class="sidebar-menu-item"><a href="#" class="sidebar-menu-link">Profile</a></li>
             </ul>
