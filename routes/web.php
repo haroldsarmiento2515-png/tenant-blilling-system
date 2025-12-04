@@ -16,6 +16,7 @@ Route::get('/register', [AuthController::class, 'showUserRegistrationForm'])->na
 Route::post('/register', [AuthController::class, 'userRegister']);
 Route::get('/email/verify', [AuthController::class, 'showVerificationForm'])->name('verification.notice');
 Route::post('/email/verify', [AuthController::class, 'verifyOtp']);
+Route::post('/email/resend', [AuthController::class, 'resendOtp'])->name('verification.resend');
 
 // Admin Authentication Routes
 Route::get('/admin/login', [AuthController::class, 'showAdminLoginForm'])->name('admin.login');
