@@ -95,8 +95,8 @@ class AuthController extends Controller
         $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
         $user->save();
 
-        // Send OTP via email
-        Mail::raw("Your OTP for email verification is: $otp", function ($message) use ($user) {
+        // Send OTP via email using a styled template
+        Mail::send('emails.otp', ['user' => $user, 'otp' => $otp], function ($message) use ($user) {
             $message->to($user->email)
                     ->subject('Email Verification OTP');
         });
